@@ -62,13 +62,14 @@ type BucketGetLifecycleResult struct {
 
 // GetLifecycle 请求实现读取生命周期管理的配置。当配置不存在时，返回404 Not Found。
 // https://www.qcloud.com/document/product/436/8278
-func (s *BucketService) GetLifecycle(ctx context.Context) (*BucketGetLifecycleResult, *Response, error) {
+func (s *BucketService) GetLifecycle(ctx context.Context, XOptionHeader *OptionalHeader) (*BucketGetLifecycleResult, *Response, error) {
 	var res BucketGetLifecycleResult
 	sendOpt := sendOptions{
 		baseURL: s.client.BaseURL.BucketURL,
 		uri:     "/?lifecycle",
 		method:  http.MethodGet,
 		result:  &res,
+		optHeader: XOptionHeader,
 	}
 	resp, err := s.client.doRetry(ctx, &sendOpt)
 	return &res, resp, err
@@ -80,10 +81,15 @@ type BucketPutLifecycleOptions struct {
 	Rules   []BucketLifecycleRule `xml:"Rule,omitempty"`
 }
 
+type OptionalHeader struct {
+	//兼容其他自定义头部
+	XOptionHeader    *http.Header `header:"-,omitempty" url:"-" xml:"-"`
+}
+
 // PutLifecycle 请求实现设置生命周期管理的功能。您可以通过该请求实现数据的生命周期管理配置和定期删除。
 // 此请求为覆盖操作，上传新的配置文件将覆盖之前的配置文件。生命周期管理对文件和文件夹同时生效。
 // https://www.qcloud.com/document/product/436/8280
-func (s *BucketService) PutLifecycle(ctx context.Context, opt *BucketPutLifecycleOptions, XOptionHeader *http.Header ) (*Response, error) {
+func (s *BucketService) PutLifecycle(ctx context.Context, opt *BucketPutLifecycleOptions, XOptionHeader *OptionalHeader ) (*Response, error) {
 	sendOpt := sendOptions{
 		baseURL: s.client.BaseURL.BucketURL,
 		uri:     "/?lifecycle",
@@ -97,11 +103,12 @@ func (s *BucketService) PutLifecycle(ctx context.Context, opt *BucketPutLifecycl
 
 // DeleteLifecycle 请求实现删除生命周期管理。
 // https://www.qcloud.com/document/product/436/8284
-func (s *BucketService) DeleteLifecycle(ctx context.Context) (*Response, error) {
+func (s *BucketService) DeleteLifecycle(ctx context.Context, XOptionHeader *OptionalHeader) (*Response, error) {
 	sendOpt := sendOptions{
 		baseURL: s.client.BaseURL.BucketURL,
 		uri:     "/?lifecycle",
 		method:  http.MethodDelete,
+		optHeader: XOptionHeader,
 	}
 	resp, err := s.client.doRetry(ctx, &sendOpt)
 	return resp, err
