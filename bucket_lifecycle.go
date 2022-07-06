@@ -80,10 +80,15 @@ type BucketPutLifecycleOptions struct {
 	Rules   []BucketLifecycleRule `xml:"Rule,omitempty"`
 }
 
+type OptionalHeader struct {
+	//兼容其他自定义头部
+	XOptionHeader    *http.Header `header:"-,omitempty" url:"-" xml:"-"`
+}
+
 // PutLifecycle 请求实现设置生命周期管理的功能。您可以通过该请求实现数据的生命周期管理配置和定期删除。
 // 此请求为覆盖操作，上传新的配置文件将覆盖之前的配置文件。生命周期管理对文件和文件夹同时生效。
 // https://www.qcloud.com/document/product/436/8280
-func (s *BucketService) PutLifecycle(ctx context.Context, opt *BucketPutLifecycleOptions, XOptionHeader *http.Header ) (*Response, error) {
+func (s *BucketService) PutLifecycle(ctx context.Context, opt *BucketPutLifecycleOptions, XOptionHeader *OptionalHeader ) (*Response, error) {
 	sendOpt := sendOptions{
 		baseURL: s.client.BaseURL.BucketURL,
 		uri:     "/?lifecycle",
