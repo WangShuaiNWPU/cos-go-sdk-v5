@@ -84,14 +84,20 @@ func (s *BucketService) Put(ctx context.Context, opt *BucketPutOptions) (*Respon
 	return resp, err
 }
 
+// BucketDeleteOptions is the option of DeleteBucket
+type BucketDeleteOptions struct {
+	XOptionHeader *http.Header `header:"-,omitempty" url:"-" xml:"-"`
+}
+
 // Delete Bucket请求可以在指定账号下删除Bucket，删除之前要求Bucket为空。
 //
 // https://www.qcloud.com/document/product/436/7732
-func (s *BucketService) Delete(ctx context.Context) (*Response, error) {
+func (s *BucketService) Delete(ctx context.Context, op *BucketDeleteOptions) (*Response, error) {
 	sendOpt := sendOptions{
 		baseURL: s.client.BaseURL.BucketURL,
 		uri:     "/",
 		method:  http.MethodDelete,
+		optHeader:op,
 	}
 	resp, err := s.client.send(ctx, &sendOpt)
 	return resp, err
